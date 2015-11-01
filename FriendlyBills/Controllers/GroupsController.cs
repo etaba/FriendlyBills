@@ -17,10 +17,11 @@ namespace FriendlyBills.Controllers
 {
     public class GroupsController : Controller
     {
-        private IRepository<Group> _groupRepo = new GroupRepository();
-        private IRepository<GroupMembership> _groupMemRepo = new GroupMembershipRepository();
+        //private IRepository<Group> _groupRepo = new GroupRepository();
+        //private IRepository<GroupMembership> _groupMemRepo = new GroupMembershipRepository();
         private ApplicationUserManager _userManager;
 
+        private GroupRepository _groupRepo = new GroupRepository();
         public ApplicationUserManager UserManager
         {
             get
@@ -40,29 +41,25 @@ namespace FriendlyBills.Controllers
             //List< GroupViewModel> groupList = new List<GroupViewModel>();
             //groupList = _groupRepo.List.Select(x => new GroupViewModel(x)).ToList();
             List<Group> gList = _groupRepo.GetGroupsByUser(user);
-            foreach (Group g in gList)
-            {
-                CreateGroupViewModel grp = new CreateGroupViewModel(g);
-                //groupList.Add(grp);
-            }
-            return View();
+
+            return View(gList);
         }
 
-        // GET: Groups/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Group group = _groupRepo.Find((int)id);
-            if (group == null)
-            {
-                return HttpNotFound();
-            }
-            CreateGroupViewModel groupViewModel = new CreateGroupViewModel(group);
-            return View(groupViewModel);
-        }
+        //// GET: Groups/Details/5
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Group group = _groupRepo.Find((int)id);
+        //    if (group == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    CreateGroupViewModel groupViewModel = new CreateGroupViewModel(group);
+        //    return View(groupViewModel);
+        //}
 
         // GET: Groups/Create
         public ActionResult Create()
@@ -80,22 +77,14 @@ namespace FriendlyBills.Controllers
             if (ModelState.IsValid)
             {
                 string userId = User.Identity.GetUserId();
-                //ApplicationUser user = UserManager.FindById(userId);
+                ApplicationUser user = UserManager.FindById(userId);
 
                 Group grp = new Group() 
                 {
                     Name = group.Name,  
                     Description = "test group"
                 };
-                int grpId = _groupRepo.Add(grp);
-
-                GroupMembership grpMem = new GroupMembership() 
-                {
-                    GroupID = grpId, 
-                    UserID = userId, 
-                    Rank = 1
-                };
-                _groupMemRepo.Add(grpMem);
+                _groupRepo.CreateGroup(grp, user);
 
                 return RedirectToAction("Index");
             }
@@ -110,7 +99,7 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Group group = _groupRepo.Find(id);
+            Group group = _groupRepo.GetByID(id);
             if (group == null)
             {
                 return HttpNotFound();
@@ -141,14 +130,10 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Group group = _groupRepo.Find((int)id);
-            if (group == null)
-            {
-                return HttpNotFound();
-            }
-            CreateGroupViewModel groupViewModel = new CreateGroupViewModel(group);
-            return View(groupViewModel);
-        }
+            _groupRepo.Delete(_groupRepo.GetByID(id));
+            //CreateGroupViewModel groupViewModel = new CreateGroupViewModel(group);
+            return View();
+        } 
 
         // POST: Groups/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -159,14 +144,7 @@ namespace FriendlyBills.Controllers
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _groupRepo.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        
     }
 
 }

@@ -6,7 +6,7 @@ using System.Web;
 
 namespace FriendlyBills.Models
 {
-    public class GroupMembership : IEntity
+    public class GroupMembership
     {
         public int ID { get; set; }
         public int Rank { get; set; }

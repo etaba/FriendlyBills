@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace FriendlyBills.DAL
+namespace FriendlyBills.DAL.Repo
 {
     public class IEntity
     {
@@ -103,7 +103,7 @@ namespace FriendlyBills.DAL
                 return _db.GroupMemberships.ToList();
             }
         }
-        public List<GroupMembership> GetGroupsById(ApplicationUser user)
+        public List<GroupMembership> GetGroupsByUser(ApplicationUser user)
         {
             return null;
         }

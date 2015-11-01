@@ -6,7 +6,7 @@ using System.Web;
 
 namespace FriendlyBills.Models
 {
-    public class Group : IEntity
+    public class Group
     {
         public Group() { ID = -1; Name = null; }
         public Group(FriendlyBills.Models.CreateGroupViewModel grp)
