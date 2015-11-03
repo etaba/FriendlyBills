@@ -14,6 +14,16 @@ namespace FriendlyBills.DAL
         {
             this.context = new ApplicationDbContext();
         }
+
+        public Group GetGroupByID(int ID)
+        {
+            return context.Groups.Find(ID);
+        }
+
+        public void Delete(int ID)
+        {
+            context.Groups.Remove(GetGroupByID(ID));
+        }
         
         public List<Group> GetGroupsByUser(string userId)
         {
@@ -39,7 +49,7 @@ namespace FriendlyBills.DAL
         }
         
         public bool JoinGroup(int grpID,
-                              int userID)
+                              string userID)
         {
             if (context.Groups.Find(grpID) == null)
             {
@@ -50,7 +60,7 @@ namespace FriendlyBills.DAL
                 GroupMembership grpMem = new GroupMembership()
                 {
                     GroupID = grpID,
-                    UserID =s userID,
+                    UserID = userID,
                     Rank = 2
                 };
                 context.GroupMemberships.Add(grpMem);

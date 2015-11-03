@@ -15,6 +15,7 @@ using FriendlyBills.Models;
 
 namespace FriendlyBills.Controllers
 {
+    [Authorize]
     public class GroupsController : Controller
     {
         private ApplicationUserManager _userManager;
@@ -76,7 +77,7 @@ namespace FriendlyBills.Controllers
                     Name = group.Name,  
                     Description = group.Description
                 };
-                _groupRepo.CreateGroup(grp, user.Id);
+                _groupRepo.CreateGroup(grp, userId);
 
                 return RedirectToAction("Index");
             }
@@ -100,7 +101,7 @@ namespace FriendlyBills.Controllers
             {
                 string userId = User.Identity.GetUserId();
 
-                _groupRepo.JoinGroup(grp, userId);
+                _groupRepo.JoinGroup(group.Id, userId);
 
                 return RedirectToAction("Index");
             }
@@ -115,7 +116,7 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Group group = _groupRepo.GetByID(id);
+            Group group = _groupRepo.GetGroupByID(id);
             if (group == null)
             {
                 return HttpNotFound();
@@ -146,7 +147,7 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            _groupRepo.Delete(_groupRepo.GetByID(id));
+            _groupRepo.Delete((int)id);
             //CreateGroupViewModel groupViewModel = new CreateGroupViewModel(group);
             return View();
         } 

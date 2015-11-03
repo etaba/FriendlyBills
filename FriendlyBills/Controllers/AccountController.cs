@@ -80,7 +80,7 @@ namespace FriendlyBills.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToAction("Index","Home");
+                    return RedirectToAction("Index","Groups");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
