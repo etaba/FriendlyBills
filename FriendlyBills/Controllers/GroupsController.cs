@@ -17,10 +17,7 @@ namespace FriendlyBills.Controllers
 {
     public class GroupsController : Controller
     {
-        //private IRepository<Group> _groupRepo = new GroupRepository();
-        //private IRepository<GroupMembership> _groupMemRepo = new GroupMembershipRepository();
         private ApplicationUserManager _userManager;
-
         private GroupRepository _groupRepo = new GroupRepository();
         public ApplicationUserManager UserManager
         {
@@ -37,11 +34,7 @@ namespace FriendlyBills.Controllers
         public ActionResult Index()
         {
             string userId = User.Identity.GetUserId();
-            ApplicationUser user = UserManager.FindById(userId);
-            //List< GroupViewModel> groupList = new List<GroupViewModel>();
-            //groupList = _groupRepo.List.Select(x => new GroupViewModel(x)).ToList();
-            List<Group> gList = _groupRepo.GetGroupsByUser(user);
-
+            List<Group> gList = _groupRepo.GetGroupsByUser(userId);
             return View(gList);
         }
 
@@ -72,19 +65,42 @@ namespace FriendlyBills.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name")] CreateGroupViewModel group)
+        public ActionResult Create([Bind(Include = "Name,Description")] CreateGroupViewModel group)
         {
             if (ModelState.IsValid)
             {
                 string userId = User.Identity.GetUserId();
-                ApplicationUser user = UserManager.FindById(userId);
 
                 Group grp = new Group() 
                 {
                     Name = group.Name,  
-                    Description = "test group"
+                    Description = group.Description
                 };
-                _groupRepo.CreateGroup(grp, user);
+                _groupRepo.CreateGroup(grp, user.Id);
+
+                return RedirectToAction("Index");
+            }
+            return View(group);
+        }
+
+        // GET: Groups/Join
+        public ActionResult Join()
+        {
+            return View();
+        }
+
+        // POST: Groups/Join
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Join([Bind(Include = "Name,ID")] CreateGroupViewModel group)
+        {
+            if (ModelState.IsValid)
+            {
+                string userId = User.Identity.GetUserId();
+
+                _groupRepo.JoinGroup(grp, userId);
 
                 return RedirectToAction("Index");
             }
@@ -113,7 +129,7 @@ namespace FriendlyBills.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Name")] CreateGroupViewModel group)
+        public ActionResult Edit([Bind(Include = "Description,Name")] CreateGroupViewModel group)
         {
             if (ModelState.IsValid)
             {
@@ -143,8 +159,5 @@ namespace FriendlyBills.Controllers
             _groupRepo.Delete(id);
             return RedirectToAction("Index");
         }
-
-        
     }
-
 }

@@ -9,11 +9,15 @@ namespace FriendlyBills.Models
         {
             Id = group.ID;
             Name = group.Name;
+            Description = group.Description;
         }
 
         [Display(Name = "Id")]
         public int Id { get; set; }
         [Display(Name = "Name")]
         public string Name { get; set; }
+        [Display(Name = "Description")]
+        public string Description { get; set; }
+        
     }
 }
