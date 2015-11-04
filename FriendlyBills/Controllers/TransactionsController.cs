@@ -40,7 +40,7 @@ namespace FriendlyBills.Controllers
         public ActionResult Create()
         {
             ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name");
-            ViewBag.SubmitterID = new SelectList(db.ApplicationUsers, "Id", "FirstName");
+            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName");
             return View();
         }
 
@@ -59,7 +59,7 @@ namespace FriendlyBills.Controllers
             }
 
             ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name", transaction.GroupID);
-            ViewBag.SubmitterID = new SelectList(db.ApplicationUsers, "Id", "FirstName", transaction.SubmitterID);
+            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName", transaction.SubmitterID);
             return View(transaction);
         }
 
@@ -76,7 +76,7 @@ namespace FriendlyBills.Controllers
                 return HttpNotFound();
             }
             ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name", transaction.GroupID);
-            ViewBag.SubmitterID = new SelectList(db.ApplicationUsers, "Id", "FirstName", transaction.SubmitterID);
+            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName", transaction.SubmitterID);
             return View(transaction);
         }
 
@@ -94,7 +94,7 @@ namespace FriendlyBills.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name", transaction.GroupID);
-            ViewBag.SubmitterID = new SelectList(db.ApplicationUsers, "Id", "FirstName", transaction.SubmitterID);
+            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName", transaction.SubmitterID);
             return View(transaction);
         }
 

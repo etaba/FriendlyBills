@@ -36,7 +36,13 @@ namespace FriendlyBills.Controllers
         {
             string userId = User.Identity.GetUserId();
             List<Group> gList = _groupRepo.GetGroupsByUser(userId);
-            return View(gList);
+            List<GroupViewModel> gViewModel = new List<GroupViewModel>();
+            foreach(Group g in gList)
+            {
+                Dictionary<string, decimal> memberBalances = _groupRepo.GetMemberBalances(g.ID, userId);
+                gViewModel.Add(new GroupViewModel(g, memberBalances));
+            }
+            return View(gViewModel);
         }
 
         //// GET: Groups/Details/5
@@ -66,7 +72,7 @@ namespace FriendlyBills.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Name,Description")] CreateGroupViewModel group)
+        public ActionResult Create([Bind(Include = "Name,Description")] GroupViewModel group)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +101,7 @@ namespace FriendlyBills.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Join([Bind(Include = "Name,ID")] CreateGroupViewModel group)
+        public ActionResult Join([Bind(Include = "Name,ID")] GroupViewModel group)
         {
             if (ModelState.IsValid)
             {
@@ -121,7 +127,7 @@ namespace FriendlyBills.Controllers
             {
                 return HttpNotFound();
             }
-            CreateGroupViewModel groupViewModel = new CreateGroupViewModel(group);
+            GroupViewModel groupViewModel = new GroupViewModel(group, _groupRepo.GetMemberBalances(group.ID,User.Identity.GetUserId()));
             return View(groupViewModel);
         }
 
@@ -130,7 +136,7 @@ namespace FriendlyBills.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Description,Name")] CreateGroupViewModel group)
+        public ActionResult Edit([Bind(Include = "Description,Name")] GroupViewModel group)
         {
             if (ModelState.IsValid)
             {
@@ -148,7 +154,6 @@ namespace FriendlyBills.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             _groupRepo.Delete((int)id);
-            //CreateGroupViewModel groupViewModel = new CreateGroupViewModel(group);
             return View();
         } 
 

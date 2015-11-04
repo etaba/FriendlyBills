@@ -23,6 +23,7 @@ namespace FriendlyBills.DAL
         public void Delete(int ID)
         {
             context.Groups.Remove(GetGroupByID(ID));
+            context.SaveChanges();
         }
         
         public List<Group> GetGroupsByUser(string userId)
@@ -37,10 +38,25 @@ namespace FriendlyBills.DAL
         public List<ApplicationUser> GetUsersByGroup(int grpId)
         {
             return (from gm in context.GroupMemberships
-                    join u in context.ApplicationUsers
+                    join u in context.Users
                     on gm.UserID equals u.Id
                     where gm.GroupID == grpId
                     select u).ToList();
+        }
+
+        public Dictionary<string, decimal> GetMemberBalances(int grpId, 
+                                                             string currUserId)
+        {
+            List<ApplicationUser> users = GetUsersByGroup(grpId).Where(u => u.Id != currUserId).ToList();
+            Dictionary<string, decimal> groupDetails = new Dictionary<string, decimal>();
+            foreach (ApplicationUser user in users)
+            {
+                    decimal sum = context.Transactions.Where(t => t.GroupID == grpId &&
+                                                            ((t.SubmitterID == user.Id && t.TargetID == currUserId) ||
+                                                            (t.SubmitterID == currUserId && t.TargetID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
+                    groupDetails.Add(Utilities.FullName(user), sum);
+            }
+            return groupDetails;
         }
 
         public void CreateGroup(Group grp,
