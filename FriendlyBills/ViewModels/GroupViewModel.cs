@@ -19,5 +19,7 @@ namespace FriendlyBills.Models
         [Display(Name = "Description")]
         public string Description { get; set; }
         
+        public Dictionary<string, int> MemberBalances {get;} 
+        
     }
 }

@@ -33,6 +33,15 @@ namespace FriendlyBills.DAL
                     where gm.UserID == userId
                     select g).ToList();
         }
+        
+        public List<ApplicationUser> GetUsersByGroup(int grpId)
+        {
+            return (from gm in context.GroupMemberships
+                    join u in context.ApplicationUsers
+                    on gm.UserID equals u.Id
+                    where gm.GroupID == grpId
+                    select u).ToList();
+        }
 
         public void CreateGroup(Group grp,
                                 string userId)
