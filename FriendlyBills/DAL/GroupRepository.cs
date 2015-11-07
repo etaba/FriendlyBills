@@ -58,6 +58,21 @@ namespace FriendlyBills.DAL
             }
             return groupDetails;
         }
+        
+        public List<object> GetMemberDetails(int grpId, 
+                                             string currUserId)
+        {
+            List<ApplicationUser> users = GetUsersByGroup(grpId).Where(u => u.Id != currUserId).ToList();
+            List<object> memberDetails = new List<object>();
+            foreach (ApplicationUser user in users)
+            {
+                    decimal sum = context.Transactions.Where(t => t.GroupID == grpId &&
+                                                            ((t.SubmitterID == user.Id && t.TargetID == currUserId) ||
+                                                            (t.SubmitterID == currUserId && t.TargetID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
+                    memberDetails.Add(new object(){ UserID = user.Id, Name = Utilities.FullName(user), Total = sum);
+            }
+            return memberDetails;
+        }
 
         public void CreateGroup(Group grp,
                                 string userId)

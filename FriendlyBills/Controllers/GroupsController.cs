@@ -40,6 +40,7 @@ namespace FriendlyBills.Controllers
             foreach(Group g in gList)
             {
                 Dictionary<string, decimal> memberBalances = _groupRepo.GetMemberBalances(g.ID, userId);
+                List<object> memberDetails = _groupRepo.GetMemberDetails(g.ID, userId);
                 gViewModel.Add(new GroupViewModel(g, memberBalances));
             }
             return View(gViewModel);

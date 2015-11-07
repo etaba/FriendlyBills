@@ -22,6 +22,8 @@ namespace FriendlyBills.Models
         [Display(Name = "Description")]
         public string Description { get; set; }
 
-        public Dictionary<string, decimal> MemberBalances { get; set; }        
+        public Dictionary<string, decimal> MemberBalances { get; set; }  
+        public List<struct> MemberDetails {get; set;}
+             
     }
 }
