@@ -22,7 +22,18 @@ namespace FriendlyBills.DAL
 
         public void Delete(int ID)
         {
-            context.Groups.Remove(GetGroupByID(ID));
+            System.Data.Entity.Core.Objects.ObjectContext oc = ((System.Data.Entity.Infrastructure.IObjectContextAdapter)context).ObjectContext;
+            Group grp = GetGroupByID(ID);
+            List<GroupMembership> grpMemberships = (from gM in context.GroupMemberships
+                                                    where gM.GroupID == ID
+                                                    select gM).ToList();
+            for (int i = 0; i < grpMemberships.Count; i++ )
+            {
+                oc.DeleteObject(grpMemberships[i]);
+            }
+            context.SaveChanges();
+
+            oc.DeleteObject(grp);
             context.SaveChanges();
         }
         
@@ -44,32 +55,39 @@ namespace FriendlyBills.DAL
                     select u).ToList();
         }
 
-        public Dictionary<string, decimal> GetMemberBalances(int grpId, 
-                                                             string currUserId)
-        {
-            List<ApplicationUser> users = GetUsersByGroup(grpId).Where(u => u.Id != currUserId).ToList();
-            Dictionary<string, decimal> groupDetails = new Dictionary<string, decimal>();
-            foreach (ApplicationUser user in users)
-            {
-                    decimal sum = context.Transactions.Where(t => t.GroupID == grpId &&
-                                                            ((t.SubmitterID == user.Id && t.TargetID == currUserId) ||
-                                                            (t.SubmitterID == currUserId && t.TargetID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
-                    groupDetails.Add(Utilities.FullName(user), sum);
-            }
-            return groupDetails;
-        }
+        //public Dictionary<string, decimal> GetMemberBalances(int grpId, 
+        //                                                     string currUserId)
+        //{
+        //    List<ApplicationUser> users = GetUsersByGroup(grpId).Where(u => u.Id != currUserId).ToList();
+        //    Dictionary<string, decimal> groupDetails = new Dictionary<string, decimal>();
+        //    foreach (ApplicationUser user in users)
+        //    {
+        //            decimal sum = context.Transactions.Where(t => t.GroupID == grpId &&
+        //                                                    ((t.SubmitterID == user.Id && t.TargetID == currUserId) ||
+        //                                                    (t.SubmitterID == currUserId && t.TargetID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
+        //            groupDetails.Add(Utilities.FullName(user), sum);
+        //    }
+        //    return groupDetails;
+        //}
         
-        public List<object> GetMemberDetails(int grpId, 
+        public List<MemberDetail> GetMemberDetails(int grpId, 
                                              string currUserId)
         {
             List<ApplicationUser> users = GetUsersByGroup(grpId).Where(u => u.Id != currUserId).ToList();
-            List<object> memberDetails = new List<object>();
+            List<MemberDetail> memberDetails = new List<MemberDetail>();
             foreach (ApplicationUser user in users)
             {
-                    decimal sum = context.Transactions.Where(t => t.GroupID == grpId &&
-                                                            ((t.SubmitterID == user.Id && t.TargetID == currUserId) ||
-                                                            (t.SubmitterID == currUserId && t.TargetID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
-                    memberDetails.Add(new object(){ UserID = user.Id, Name = Utilities.FullName(user), Total = sum);
+                decimal sum = context.Transactions.Where(t => t.GroupID == grpId &&
+                                                        ((t.SubmitterID == user.Id && t.TargetID == currUserId) ||
+                                                        (t.SubmitterID == currUserId && t.TargetID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
+
+                MemberDetail memberDetail = new MemberDetail
+                {
+                    UserID = user.Id,
+                    FullName = Utilities.FullName(user),
+                    Balance = sum
+                };
+                memberDetails.Add(memberDetail);
             }
             return memberDetails;
         }

@@ -14,22 +14,22 @@
                 <tr>
                     <th>
                         @Html.DisplayFor(modelItem => item.Name)
-                        , Net Value: @item.MemberBalances.Values.Sum()
+                        , Net Value: @item.MemberDetails.Sum(md => md.Balance)
                     </th>
                 </tr>
                 <tr>
-                    @foreach (var userBalance in item.MemberBalances)
+                    @foreach (var userBalance in item.MemberDetails)
                     {
                         <td>
-                            @userBalance.Key
+                            @userBalance.FullName
                         </td>
                     }
                 </tr>
                 <tr>
-                    @foreach (var userBalance in item.MemberBalances)
+                    @foreach (var userBalance in item.MemberDetails)
                     {
-                        <td class="account" id=@{>
-                            @userBalance.Value
+                        <td class="account" id=@userBalance.UserID onclick="seeAccountDetails(this.id)">
+                            @userBalance.Balance
                         </td>
                     }
                 </tr>
@@ -53,3 +53,9 @@ else
 @Html.ActionLink("Join Existing Group", "Join")
 
 
+<script type="text/javascript">
+    function seeAccountDetails(uId)
+    {
+        alert("user id is: " + uId);
+    }
+</script>

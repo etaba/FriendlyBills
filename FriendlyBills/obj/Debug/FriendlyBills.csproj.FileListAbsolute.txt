@@ -110,3 +110,4 @@ C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\bin\Microsoft.Ow
 C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\bin\Microsoft.Owin.Security.Google.xml
 C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\bin\Microsoft.Owin.Security.Twitter.xml
 C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\obj\Debug\FriendlyBills.csprojResolveAssemblyReference.cache

@@ -7,12 +7,12 @@ namespace FriendlyBills.Models
     {
         public GroupViewModel() { Id = -1; Name = null; }
         public GroupViewModel(Group group,
-                              Dictionary<string, decimal> memberBalances)
+                              List<MemberDetail> memberDetails)
         {
             Id = group.ID;
             Name = group.Name;
             Description = group.Description;
-            MemberBalances = memberBalances;
+            MemberDetails = memberDetails;
         }
 
         [Display(Name = "Id")]
@@ -22,8 +22,14 @@ namespace FriendlyBills.Models
         [Display(Name = "Description")]
         public string Description { get; set; }
 
-        public Dictionary<string, decimal> MemberBalances { get; set; }  
-        public List<struct> MemberDetails {get; set;}
+        public List<MemberDetail> MemberDetails {get; set;}
              
+    }
+
+    public struct MemberDetail
+    {
+        public string UserID;
+        public string FullName;
+        public decimal Balance;
     }
 }

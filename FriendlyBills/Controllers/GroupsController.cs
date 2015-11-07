@@ -39,9 +39,8 @@ namespace FriendlyBills.Controllers
             List<GroupViewModel> gViewModel = new List<GroupViewModel>();
             foreach(Group g in gList)
             {
-                Dictionary<string, decimal> memberBalances = _groupRepo.GetMemberBalances(g.ID, userId);
-                List<object> memberDetails = _groupRepo.GetMemberDetails(g.ID, userId);
-                gViewModel.Add(new GroupViewModel(g, memberBalances));
+                List<MemberDetail> memberDetails = _groupRepo.GetMemberDetails(g.ID, userId);
+                gViewModel.Add(new GroupViewModel(g, memberDetails));
             }
             return View(gViewModel);
         }
@@ -128,7 +127,7 @@ namespace FriendlyBills.Controllers
             {
                 return HttpNotFound();
             }
-            GroupViewModel groupViewModel = new GroupViewModel(group, _groupRepo.GetMemberBalances(group.ID,User.Identity.GetUserId()));
+            GroupViewModel groupViewModel = new GroupViewModel(group, _groupRepo.GetMemberDetails(group.ID,User.Identity.GetUserId()));
             return View(groupViewModel);
         }
 
