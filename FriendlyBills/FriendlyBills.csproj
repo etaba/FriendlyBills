@@ -40,6 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -51,6 +52,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -166,6 +168,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="DAL\GroupRepository.cs" />
+    <Compile Include="DAL\TransactionRepository.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -173,11 +176,28 @@
     <Compile Include="Migrations\201510181754591_InitialCreate.Designer.cs">
       <DependentUpon>201510181754591_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511081710542_EnabledCascadeDelete.cs" />
+    <Compile Include="Migrations\201511081710542_EnabledCascadeDelete.Designer.cs">
+      <DependentUpon>201511081710542_EnabledCascadeDelete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511081817158_AddForeignKeysAttempt.cs" />
+    <Compile Include="Migrations\201511081817158_AddForeignKeysAttempt.Designer.cs">
+      <DependentUpon>201511081817158_AddForeignKeysAttempt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511082017206_AddForeignKeysAttempt2.cs" />
+    <Compile Include="Migrations\201511082017206_AddForeignKeysAttempt2.Designer.cs">
+      <DependentUpon>201511082017206_AddForeignKeysAttempt2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511211737570_FixedTransactionModelForeignKeys.cs" />
+    <Compile Include="Migrations\201511211737570_FixedTransactionModelForeignKeys.Designer.cs">
+      <DependentUpon>201511211737570_FixedTransactionModelForeignKeys.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\GroupMembership.cs" />
+    <Compile Include="ViewModels\TransactionViewModel.cs" />
     <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="ViewModels\ManageViewModels.cs" />
@@ -206,6 +226,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="TODO.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -271,6 +292,18 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201510181754591_InitialCreate.resx">
       <DependentUpon>201510181754591_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511081710542_EnabledCascadeDelete.resx">
+      <DependentUpon>201511081710542_EnabledCascadeDelete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511081817158_AddForeignKeysAttempt.resx">
+      <DependentUpon>201511081817158_AddForeignKeysAttempt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511082017206_AddForeignKeysAttempt2.resx">
+      <DependentUpon>201511082017206_AddForeignKeysAttempt2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511211737570_FixedTransactionModelForeignKeys.resx">
+      <DependentUpon>201511211737570_FixedTransactionModelForeignKeys.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -1,4 +1,4 @@
-﻿@model FriendlyBills.Models.Transaction
+﻿@model FriendlyBills.Models.TransactionViewModel
 
 @{
     ViewBag.Title = "Delete";
@@ -11,20 +11,13 @@
     <h4>Transaction</h4>
     <hr />
     <dl class="dl-horizontal">
+
         <dt>
-            @Html.DisplayNameFor(model => model.Group.Name)
+            @Html.DisplayNameFor(model => model.Submitter)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Group.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Submitter.FirstName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Submitter.FirstName)
+            @Html.DisplayFor(model => model.Submitter)
         </dd>
 
         <dt>
@@ -44,14 +37,6 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.NonMonetaryAmount)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.NonMonetaryAmount)
-        </dd>
-
-        <dt>
             @Html.DisplayNameFor(model => model.EntryTimestamp)
         </dt>
 
@@ -65,22 +50,6 @@
 
         <dd>
             @Html.DisplayFor(model => model.AdditionalTimestamp)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TargetID)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TargetID)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Approved)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Approved)
         </dd>
 
     </dl>

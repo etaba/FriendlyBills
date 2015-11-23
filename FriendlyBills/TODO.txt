@@ -1,0 +1,33 @@
+timestamp: which should be shown as a transactions page column; entry date, the date of the transaction specified by the submitter, or both?
+
+properly disposing of controllers/db contexts?
+
+should account balance field be added to group model? to avoid calculating the sum everytime, and isolate the dal calls made by groupRepo and TransactionRepo
+
+what happens if one user is in multiple groups with another user? are their balances maintained in context of each group, or combined? is this even possible
+
+Asynchronous calls everywhere
+
+Add rank column to user table: 2->Master 1->Admin 0->User
+	1 Master per group.
+	Master and Admins can invite and accept new users to group.
+	Accounts can only be deleted by higher-ranking users
+	Only Master can grant a user Admin privileges.
+	Master can transfer mastership to any user.
+
+Requesting to join a group:
+	RegisterUserToGroup controller method gets Master and Admins from db, sends them each join request 
+
+Notifications table: remove either timestamp or datetime column
+
+User table: do you really need to ahve the active column int here?
+	REMOVE PRIVILEGE COLUMN
+
+Rename primary keys of tables  to just be ID instead of the name and then the id field.
+
+Add error messages for every ERROR MESSAGE stub (see login http post controler for an example )
+
+New layout: If users have more than one group, logging in should direct them to homepage from which they select one of their groups and loads the group view page
+	If user only has one group, home page IS group view page
+
+GroupIDs should be 4 digits to look professional

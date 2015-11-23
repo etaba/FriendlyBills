@@ -28,7 +28,7 @@
                 <tr>
                     @foreach (var userBalance in item.MemberDetails)
                     {
-                        <td class="account" id=@userBalance.UserID onclick="seeAccountDetails(this.id)">
+                        <td class="account" id=@userBalance.UserID onclick="GoToTransactionDetails(this.id,@item.Id)">
                             @userBalance.Balance
                         </td>
                     }
@@ -54,8 +54,9 @@ else
 
 
 <script type="text/javascript">
-    function seeAccountDetails(uId)
+    function GoToTransactionDetails(uId,gId)
     {
-        alert("user id is: " + uId);
+        window.location.href = "/Transactions/Index?memberId="+uId+"&groupId="+gId;
+        //alert("user id is: " + uId);
     }
 </script>

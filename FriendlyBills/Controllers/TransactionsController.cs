@@ -7,19 +7,68 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FriendlyBills.Models;
+using FriendlyBills.DAL;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+
+
 
 namespace FriendlyBills.Controllers
 {
+    [Authorize]
     public class TransactionsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private TransactionRepository _tranRepo;
+        private ApplicationUserManager _userManager;
+        private int _groupId;
+        private string _memberId;
+        private string _userId;
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+
+        public TransactionsController()
+        {
+            _tranRepo = new TransactionRepository();
+        }
 
         // GET: Transactions
-        public ActionResult Index()
+        public ActionResult Index(string memberId, int groupId)
         {
-            var transactions = db.Transactions.Include(t => t.Group).Include(t => t.Submitter);
-            return View(transactions.ToList());
+            //TODO: move to constructor and store this info in a better more global way
+            TempData["UserID"] = User.Identity.GetUserId();
+            if (groupId != null)
+            {
+                TempData["GroupID"] = groupId;
+            }
+            if (memberId != null)
+            {
+                TempData["MemberID"] = memberId;
+            }
+
+            List<Transaction> transactions = _tranRepo.GetTransactions(groupId, User.Identity.GetUserId(), memberId);
+            List<TransactionViewModel> transactionRows = new List<TransactionViewModel>();
+            foreach (Transaction transaction in transactions)
+            {
+                TransactionViewModel transactionRow = new TransactionViewModel(transaction);
+                transactionRows.Add(transactionRow);
+            }
+            return View(transactionRows);
         }
+
+        //GET: Transactions
+        //public ActionResult Index()
+        //{
+        //    return RedirectToAction("Index", new { memberId = TempData["MemberID"].ToString(), groupId = (int)TempData["GroupID"] });
+        //}
 
         // GET: Transactions/Details/5
         public ActionResult Details(int? id)
@@ -28,7 +77,7 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Transaction transaction = db.Transactions.Find(id);
+            Transaction transaction = _tranRepo.GetTransactionByID((int)id);
             if (transaction == null)
             {
                 return HttpNotFound();
@@ -39,8 +88,6 @@ namespace FriendlyBills.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name");
-            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName");
             return View();
         }
 
@@ -49,18 +96,25 @@ namespace FriendlyBills.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Description,MonetaryAmount,NonMonetaryAmount,EntryTimestamp,AdditionalTimestamp,SubmitterID,TargetID,GroupID,Approved")] Transaction transaction)
+        public ActionResult Create([Bind(Include = "Description,MonetaryAmount,AdditionalTimestamp")] TransactionViewModel tran)
         {
             if (ModelState.IsValid)
             {
-                db.Transactions.Add(transaction);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                Transaction transaction = new Transaction()
+                {
+                    MonetaryAmount = tran.MonetaryAmount,
+                    Description = tran.Description,
+                    AdditionalTimestamp = tran.AdditionalTimestamp,
 
-            ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name", transaction.GroupID);
-            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName", transaction.SubmitterID);
-            return View(transaction);
+                    EntryTimestamp = DateTime.Now,
+                    TargetUserID = TempData["MemberID"].ToString(),
+                    SubmitterID = TempData["UserID"].ToString(),
+                    GroupID = (int)TempData["GroupID"]
+                };
+                _tranRepo.AddTransaction(transaction);
+                return RedirectToAction("Index", "Transactions", new { memberId = TempData["MemberID"].ToString(), groupId = (int)TempData["GroupID"] });
+            }
+            return View();
         }
 
         // GET: Transactions/Edit/5
@@ -70,13 +124,11 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Transaction transaction = db.Transactions.Find(id);
+            TransactionViewModel transaction = new TransactionViewModel(_tranRepo.GetTransactionByID((int)id));
             if (transaction == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name", transaction.GroupID);
-            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName", transaction.SubmitterID);
             return View(transaction);
         }
 
@@ -85,16 +137,17 @@ namespace FriendlyBills.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Description,MonetaryAmount,NonMonetaryAmount,EntryTimestamp,AdditionalTimestamp,SubmitterID,TargetID,GroupID,Approved")] Transaction transaction)
+        public ActionResult Edit([Bind(Include = "Description,MonetaryAmount,AdditionalTimestamp")] TransactionViewModel transaction)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(transaction).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                Transaction tran = _tranRepo.GetTransactionByID((int)transaction.ID);
+                tran.Description = transaction.Description;
+                tran.MonetaryAmount = transaction.MonetaryAmount;
+                tran.AdditionalTimestamp = transaction.AdditionalTimestamp;
+                _tranRepo.Edit(tran);
+                return RedirectToAction("Index","Transactions",new {memberId=TempData["MemberID"].ToString(),groupId=(int)TempData["GroupID"]});
             }
-            ViewBag.GroupID = new SelectList(db.Groups, "ID", "Name", transaction.GroupID);
-            ViewBag.SubmitterID = new SelectList(db.Users, "Id", "FirstName", transaction.SubmitterID);
             return View(transaction);
         }
 
@@ -105,12 +158,21 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Transaction transaction = db.Transactions.Find(id);
-            if (transaction == null)
+            Transaction tran = _tranRepo.GetTransactionByID((int)id);
+            if (tran == null)
             {
                 return HttpNotFound();
             }
-            return View(transaction);
+
+            if (tran.SubmitterID != TempData["UserID"].ToString()) //do not allow user to delete transactions they didnt submit
+            {
+                //TODO: some notification here
+                return RedirectToAction("Index");
+            }
+
+            TransactionViewModel tranViewModel = new TransactionViewModel(tran);
+            
+            return View(tranViewModel);
         }
 
         // POST: Transactions/Delete/5
@@ -118,9 +180,7 @@ namespace FriendlyBills.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Transaction transaction = db.Transactions.Find(id);
-            db.Transactions.Remove(transaction);
-            db.SaveChanges();
+            _tranRepo.Delete(id);
             return RedirectToAction("Index");
         }
 
@@ -128,7 +188,7 @@ namespace FriendlyBills.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _tranRepo.Dispose(disposing);
             }
             base.Dispose(disposing);
         }

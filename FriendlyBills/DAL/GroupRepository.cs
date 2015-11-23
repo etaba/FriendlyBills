@@ -22,18 +22,8 @@ namespace FriendlyBills.DAL
 
         public void Delete(int ID)
         {
-            System.Data.Entity.Core.Objects.ObjectContext oc = ((System.Data.Entity.Infrastructure.IObjectContextAdapter)context).ObjectContext;
             Group grp = GetGroupByID(ID);
-            List<GroupMembership> grpMemberships = (from gM in context.GroupMemberships
-                                                    where gM.GroupID == ID
-                                                    select gM).ToList();
-            for (int i = 0; i < grpMemberships.Count; i++ )
-            {
-                oc.DeleteObject(grpMemberships[i]);
-            }
-            context.SaveChanges();
-
-            oc.DeleteObject(grp);
+            context.Groups.Remove(grp);
             context.SaveChanges();
         }
         
@@ -78,8 +68,8 @@ namespace FriendlyBills.DAL
             foreach (ApplicationUser user in users)
             {
                 decimal sum = context.Transactions.Where(t => t.GroupID == grpId &&
-                                                        ((t.SubmitterID == user.Id && t.TargetID == currUserId) ||
-                                                        (t.SubmitterID == currUserId && t.TargetID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
+                                                        ((t.SubmitterID == user.Id && t.TargetUserID == currUserId) ||
+                                                        (t.SubmitterID == currUserId && t.TargetUserID == user.Id))).Sum(t => (int?)t.MonetaryAmount) ?? 0;
 
                 MemberDetail memberDetail = new MemberDetail
                 {
@@ -93,13 +83,13 @@ namespace FriendlyBills.DAL
         }
 
         public void CreateGroup(Group grp,
-                                string userId)
+                                ApplicationUser user)
         {
             grp = context.Groups.Add(grp);
             GroupMembership grpMem = new GroupMembership()
             {
                 GroupID = grp.ID,
-                UserID = userId,
+                UserID = user.Id,
                 Rank = 1
             };
             context.GroupMemberships.Add(grpMem);
@@ -121,9 +111,17 @@ namespace FriendlyBills.DAL
                     UserID = userID,
                     Rank = 2
                 };
-                context.GroupMemberships.Add(grpMem);
+                GroupMembership grpMem2 = context.GroupMemberships.Add(grpMem);
                 context.SaveChanges();
                 return true;
+            }
+        }
+
+        public void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                context.Dispose();
             }
         }
     }

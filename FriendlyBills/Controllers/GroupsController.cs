@@ -78,12 +78,11 @@ namespace FriendlyBills.Controllers
             {
                 string userId = User.Identity.GetUserId();
 
-                Group grp = new Group() 
+                Group grp = new Group(group) 
                 {
-                    Name = group.Name,  
                     Description = group.Description
                 };
-                _groupRepo.CreateGroup(grp, userId);
+                _groupRepo.CreateGroup(grp, UserManager.FindById(userId));
 
                 return RedirectToAction("Index");
             }
@@ -153,7 +152,6 @@ namespace FriendlyBills.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            _groupRepo.Delete((int)id);
             return View();
         } 
 
@@ -164,6 +162,14 @@ namespace FriendlyBills.Controllers
         {
             _groupRepo.Delete(id);
             return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _groupRepo.Dispose(disposing);
+            }
         }
     }
 }

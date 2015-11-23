@@ -111,3 +111,7 @@ C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\bin\Microsoft.Ow
 C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\bin\Microsoft.Owin.Security.Twitter.xml
 C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\obj\Debug\FriendlyBills.csprojResolveAssemblyReference.cache
+C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\obj\Debug\FriendlyBills.Migrations.EnabledCascadeDelete.resources
+C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\obj\Debug\FriendlyBills.Migrations.AddForeignKeysAttempt.resources
+C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\obj\Debug\FriendlyBills.Migrations.AddForeignKeysAttempt2.resources
+C:\Users\etaba\Documents\MyProjects\FriendlyBills\FriendlyBills\obj\Debug\FriendlyBills.Migrations.FixedTransactionModelForeignKeys.resources
